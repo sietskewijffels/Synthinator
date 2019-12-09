@@ -18,7 +18,7 @@ Oscillator::Oscillator(float _analog_freq, int _sample_freq, WaveType _type):
 
   normalize();
 
-  std::cout << "Normalized freq: " << norm_freq << std::endl;
+  std::cerr << "Normalized freq: " << norm_freq << std::endl;
 
   switch (_type){
     case WaveType::WAVE_SINE:

@@ -30,7 +30,7 @@ void block_wave(unsigned char *buffer, int _freq, int sampling_freq, int length)
     //printf("Block size: %d\n", block_size);
     //printf("Num blocks: %d\n", n_blocks);
 
-    //std::cout << _freq << std::endl;
+    //std::cerr << _freq << std::endl;
 
     unsigned char sound;
 
@@ -59,7 +59,7 @@ int onPlayback(snd_pcm_t *pcm_handle, snd_pcm_sframes_t nframes){
 
 void make_sound(snd_pcm_t *pcm_handle){
 
-    std::cout << "Soundshizz" << std::endl;
+    std::cerr << "Soundshizz" << std::endl;
 
     //Setup pollstuff
     int nfds = snd_pcm_poll_descriptors_count(pcm_handle);
@@ -69,7 +69,7 @@ void make_sound(snd_pcm_t *pcm_handle){
 
     osc.buffer = buffer;
 
-    std::cout << "Buffer size: " << sizeof(buffer) / sizeof(float) << std::endl;
+    std::cerr << "Buffer size: " << sizeof(buffer) / sizeof(float) << std::endl;
 
     while(1){
 
@@ -146,19 +146,11 @@ void setFreq(char in){
 
 void getFreq(){
 
-    initscr();
-    clear();
-    noecho();
-    cbreak();
+
 
     while(1){
 
-        // std::cin >> freq;
-        // std::cout << "\r";
-
-        //osc.setAnalogFreq(freq);
-        //cbreak();
-        char key = getchar();
+        char key = getch();
         setFreq(key);
 
         osc.setAnalogFreq(freq);
@@ -168,8 +160,6 @@ void getFreq(){
 
     }
 
-    nocbreak();
-    endwin();
 
 
 }
@@ -177,7 +167,7 @@ void getFreq(){
 
 int main (int argc, char *argv[]){
 
-    std::cout << "Yo Whaddup!" << std::endl;
+    std::cerr << "Yo Whaddup!" << std::endl; // TODO: make log file instead of stderr
 
     snd_pcm_t *pcm_handle;
     snd_pcm_stream_t stream = SND_PCM_STREAM_PLAYBACK;
@@ -203,6 +193,10 @@ int main (int argc, char *argv[]){
         return -1;
     }
 
+    initscr();
+    clear();
+    noecho();
+    cbreak();
 
 
     std::thread audio_thread;
@@ -211,10 +205,12 @@ int main (int argc, char *argv[]){
     audio_thread = std::thread(make_sound, pcm_handle);
     input_thread = std::thread(getFreq);
 
-
-
     audio_thread.join();
     input_thread.join();
+
+    nocbreak();
+    endwin();
+
 
     return 0;
 }
