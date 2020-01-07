@@ -7,6 +7,7 @@
 #include <ncurses.h>
 
 #include "oscillator.hpp"
+#include "keyboard.hpp"
 
 #define BUF_SIZE 512
 #define SAMPLE_FREQ 48000
@@ -17,41 +18,24 @@ unsigned char gain  = 0x10;
 
 Oscillator osc = Oscillator(freq, SAMPLE_FREQ, WaveType::WAVE_SINE);
 
-
-
-void block_wave(unsigned char *buffer, int _freq, int sampling_freq, int length){
-
-    if (_freq == 0)
-        return;
-    int block_size = sampling_freq/ _freq;
-    int n_blocks = length/ block_size;
-
-    //printf("Buf length: %d\n",length);
-    //printf("Block size: %d\n", block_size);
-    //printf("Num blocks: %d\n", n_blocks);
-
-    //std::cerr << _freq << std::endl;
-
-    unsigned char sound;
-
-    for (int block = 0; block < n_blocks; block++){
-        for (int sample = 0; sample < block_size; sample++){
-
-            sound = (sample < (block_size/2)) ?  gain : 0;
-            buffer[(block*block_size + sample)] = sound;
-            //buffer[2*(block*block_size + sample) + 1] = 0;
-
-        }
-    }
-
-}
-
+Keyboard kbd;
+bool held = false;
 
 int onPlayback(snd_pcm_t *pcm_handle, snd_pcm_sframes_t nframes){
 
 
-    osc.oscillate();
 
+    if (kbd.getKeyState(KEY_SPACE) == 1 && held == false){
+        held = true;
+        osc.setAnalogFreq(freq);
+    } else if (kbd.getKeyState(KEY_SPACE) == 0 && held == true){
+
+        held = false;
+        osc.setAnalogFreq(0);
+    }
+
+
+    osc.oscillate();
 
     return snd_pcm_writei(pcm_handle, buffer, nframes);
 }
@@ -153,14 +137,9 @@ void getFreq(){
         char key = getch();
         setFreq(key);
 
-        osc.setAnalogFreq(freq);
-
         if (freq == 0)
             return;
-
     }
-
-
 
 }
 
