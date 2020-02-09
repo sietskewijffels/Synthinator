@@ -8,6 +8,7 @@
 #include "oscillator.hpp"
 #include "InputThread.hpp"
 #include "keyboard.hpp"
+#include "EventQueue.hpp"
 
 #define BUF_SIZE 512
 #define SAMPLE_FREQ 48000
@@ -17,9 +18,24 @@ float freq = 440;
 unsigned char gain  = 0x10;
 
 Oscillator osc = Oscillator(freq, SAMPLE_FREQ, WaveType::WAVE_SINE);
+EventQueue event_queue;
 
 
 int onPlayback(snd_pcm_t *pcm_handle, snd_pcm_sframes_t nframes){
+
+    // This should probably happen in a separate thread..
+    if (!event_queue.queue.empty()){
+
+        std::cerr << "Reading event" << std::endl;
+        
+        if (event_queue.queue.begin()->type == NOTE_OFF){
+            osc.setAnalogFreq(0);
+        } else {
+            osc.setAnalogFreq(event_queue.queue.begin()->freq);
+        }
+
+        event_queue.queue.pop_back();
+    }
 
     osc.oscillate();
 
@@ -63,57 +79,6 @@ void make_sound(snd_pcm_t *pcm_handle){
 }
 
 
-void setFreq(char in){
-
-    //TODO: make notes  custom
-    switch(in){
-    case 'z': // C
-        freq = 261.63;
-        break;
-    case 's': // C#
-        freq = 277.18;
-        break;
-    case 'x': // D
-        freq = 293.66;
-        break;
-    case 'd': // D#
-        freq = 311.13;
-        break;
-    case 'c': // E
-        freq = 329.63;
-        break;
-    case 'v': // F
-        freq = 349.23;
-        break;
-    case 'g': // F#
-        freq = 369.99;
-        break;
-    case 'b': // G
-        freq = 392.00;
-        break;
-    case 'h': // G#
-        freq = 415.30;
-        break;
-    case 'n': // A
-        freq = 440.00;
-        break;
-    case 'j': // A#
-        freq = 466.16;
-        break;
-    case 'm': // B
-        freq = 493.88;
-        break;
-    case ',': // C
-        freq = 523.25;
-        break;
-    case 'q':
-        freq = 0;
-        break;
-    }
-
-}
-
-
 
 int main (int argc, char *argv[]){
 
@@ -147,7 +112,7 @@ int main (int argc, char *argv[]){
     std::thread audio_thread;
 
     audio_thread = std::thread(make_sound, pcm_handle);
-    InputThread input_thread;
+    InputThread input_thread(&event_queue);
 
     audio_thread.join();
 

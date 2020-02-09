@@ -7,21 +7,31 @@
 #ifndef _INPUT_THREAD_HPP
 #define _INPUT_THREAD_HPP
 
-#include <thread>
 #include "keyboard.hpp"
+#include "EventQueue.hpp"
+
+
+typedef struct {
+
+    Event_type type;
+    float freq;
+    float velocity;
+
+} InputEvent;
+
 
 class InputThread{
 
 public:
-    InputThread();
+    InputThread(EventQueue * _input_queue);
     ~InputThread();
+    EventQueue * input_events;
 
-    void inputLoop();
 
 private:
-    std::thread loop;
     bool active;
-    Keyboard kbd;
+    Keyboard * kbd; // Pointer to keyboard device
+
 
 
 };
