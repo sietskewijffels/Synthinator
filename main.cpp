@@ -4,9 +4,9 @@
 #include <thread>
 #include <stdlib.h>
 #include <string>
-#include <ncurses.h>
 
 #include "oscillator.hpp"
+#include "InputThread.hpp"
 #include "keyboard.hpp"
 
 #define BUF_SIZE 512
@@ -18,22 +18,8 @@ unsigned char gain  = 0x10;
 
 Oscillator osc = Oscillator(freq, SAMPLE_FREQ, WaveType::WAVE_SINE);
 
-Keyboard kbd;
-bool held = false;
 
 int onPlayback(snd_pcm_t *pcm_handle, snd_pcm_sframes_t nframes){
-
-
-
-    if (kbd.getKeyState(KEY_SPACE) == 1 && held == false){
-        held = true;
-        osc.setAnalogFreq(freq);
-    } else if (kbd.getKeyState(KEY_SPACE) == 0 && held == true){
-
-        held = false;
-        osc.setAnalogFreq(0);
-    }
-
 
     osc.oscillate();
 
@@ -128,21 +114,6 @@ void setFreq(char in){
 }
 
 
-void getFreq(){
-
-
-
-    while(1){
-
-        char key = getch();
-        setFreq(key);
-
-        if (freq == 0)
-            return;
-    }
-
-}
-
 
 int main (int argc, char *argv[]){
 
@@ -172,23 +143,13 @@ int main (int argc, char *argv[]){
         return -1;
     }
 
-    initscr();
-    clear();
-    noecho();
-    cbreak();
-
 
     std::thread audio_thread;
-    std::thread input_thread;
 
     audio_thread = std::thread(make_sound, pcm_handle);
-    input_thread = std::thread(getFreq);
+    InputThread input_thread;
 
     audio_thread.join();
-    input_thread.join();
-
-    nocbreak();
-    endwin();
 
 
     return 0;

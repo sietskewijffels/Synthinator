@@ -1,10 +1,10 @@
 
 CC = g++
 
-CFLAGS = -lasound -pthread -lncurses
+CFLAGS = -lasound -pthread 
 
-DEPS = keyboard.hpp oscillator.hpp waveform.hpp 
-OBJ = keyboard.o oscillator.o waveform.o main.o
+DEPS = InputThread.hpp keyboard.hpp oscillator.hpp waveform.hpp
+OBJ = InputThread.o keyboard.o oscillator.o waveform.o main.o
 
 %.o: %.c $(DEPS)
 	$(CC) -Wall -c -o $@ $< $(CFLAGS)

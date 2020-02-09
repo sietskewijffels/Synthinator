@@ -30,7 +30,6 @@ public:
     Keyboard();
     ~Keyboard();
     short getKeyState(short key);
-    void readEv();
     void keyboardLoop();
 
 private:
