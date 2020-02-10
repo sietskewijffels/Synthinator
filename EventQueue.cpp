@@ -13,11 +13,8 @@ void EventQueue::handleNext(){
 
 void EventQueue::append(float freq, Event_type type){
 
-    std::cerr << "Event: " << freq << ", " << type << std::endl;
-
     Event event = {type, freq, 1};
 
     queue.push_back(event);
-
 
 }
