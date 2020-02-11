@@ -22,8 +22,10 @@ class Oscillator {
 public:
 
   Oscillator(float _analog_freq, int _sample_freq);
-
+  Oscillator(float _analog_freq, int _sample_freq, float * _buffer);
   Oscillator(float _analog_freq, int _sample_freq, WaveType _type);
+  Oscillator(float _analog_freq, int _sample_freq, float * buffer, WaveType _type);
+  ~Oscillator();
 public:
   Waveform * waveform;    // Waveform gen
   float norm_freq;        // Normalized frequency (cycles / sample)
@@ -37,6 +39,7 @@ public:
   void setSampleFreq(int _sample_freq);
   void setType(WaveType _type){ type = _type;}
   WaveType getType(){return type;}
+  float getAnalogFreq(){return analog_freq;}
 
 private:
   float analog_freq;    // Analog Frequency

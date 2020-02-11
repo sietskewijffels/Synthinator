@@ -4,38 +4,85 @@
 #include <thread>
 #include <stdlib.h>
 #include <string>
-#include <ncurses.h>
+#include <array>
 
 #include "oscillator.hpp"
+#include "InputThread.hpp"
 #include "keyboard.hpp"
+#include "EventQueue.hpp"
 
 #define BUF_SIZE 512
 #define SAMPLE_FREQ 48000
 
 float buffer[BUF_SIZE];
-float freq = 440;
+
 unsigned char gain  = 0x10;
+float freq = 0;
+//Oscillator osc = Oscillator(freq, SAMPLE_FREQ, WaveType::WAVE_SINE);
+EventQueue event_queue;
 
-Oscillator osc = Oscillator(freq, SAMPLE_FREQ, WaveType::WAVE_SINE);
-
-Keyboard kbd;
-bool held = false;
+std::vector<Oscillator> playing;
 
 int onPlayback(snd_pcm_t *pcm_handle, snd_pcm_sframes_t nframes){
 
+    // This should probably happen in a separate thread..
+
+    while (!event_queue.queue.empty()){
+
+        //std::cerr << "Reading event" << std::endl;
+
+            // check what event it was
+
+            if (event_queue.queue.front().type == NOTE_OFF && event_queue.queue.front().freq != 0){
+
+                //std::cerr << "NOTE OFF" << event_queue.queue.begin()->freq << std::endl;
+                // NOTE_OFF so remove from vector of playing notes
+                for (std::vector<Oscillator>::iterator it = playing.begin(); it != playing.end(); it++){
+
+                    if (it->getAnalogFreq() == event_queue.queue.front().freq){
+
+                        std::cerr << "NOTE OFF " << it->getAnalogFreq() << std::endl;
+                        playing.erase(it);
+                        break;
+
+                    }
+                }
+
+            } else if (event_queue.queue.front().type == NOTE_ON && event_queue.queue.front().freq != 0) {
+                // NOTE_ON create new oscillator and add to playing notes
+                Oscillator osci(event_queue.queue.front().freq, SAMPLE_FREQ, WaveType::WAVE_SINE);
+                playing.push_back(osci);
+                std::cerr << "NOTE ON " << event_queue.queue.front().freq << std::endl;
+            }
+
+            event_queue.queue_mutex.lock();
+            event_queue.queue.pop();
+            event_queue.queue_mutex.unlock();
 
 
-    if (kbd.getKeyState(KEY_SPACE) == 1 && held == false){
-        held = true;
-        osc.setAnalogFreq(freq);
-    } else if (kbd.getKeyState(KEY_SPACE) == 0 && held == true){
-
-        held = false;
-        osc.setAnalogFreq(0);
     }
 
+    for (int n = 0; n < BUF_SIZE; n++){
+        buffer[n] = 0;
+    }
 
-    osc.oscillate();
+    if (!playing.empty()){
+    // oscillate all running oscillators
+        for (auto note: playing){
+            note.oscillate();
+
+            // Print currently playing freqs
+            std::cerr << note.getAnalogFreq() << "\t";
+
+            // Add obtained waveform to total buffer
+            for (int n = 0; n < BUF_SIZE; n++){
+                buffer[n] += note.buffer[n] / playing.size();
+            }
+        }
+    }
+
+    std::cerr << std::endl;
+
 
     return snd_pcm_writei(pcm_handle, buffer, nframes);
 }
@@ -51,14 +98,11 @@ void make_sound(snd_pcm_t *pcm_handle){
 
     snd_pcm_poll_descriptors(pcm_handle, pfds, nfds);
 
-    osc.buffer = buffer;
+    //osc.buffer = buffer;
 
-    std::cerr << "Buffer size: " << sizeof(buffer) / sizeof(float) << std::endl;
+    std::cerr << "Buffer size: " << BUF_SIZE << std::endl;
 
     while(1){
-
-        if (freq == 0)
-            break;
 
         if (poll(pfds, nfds, 1000) > 0){
             if (pfds->revents > 0){
@@ -76,72 +120,6 @@ void make_sound(snd_pcm_t *pcm_handle){
 
 }
 
-
-void setFreq(char in){
-
-    //TODO: make notes  custom
-    switch(in){
-    case 'z': // C
-        freq = 261.63;
-        break;
-    case 's': // C#
-        freq = 277.18;
-        break;
-    case 'x': // D
-        freq = 293.66;
-        break;
-    case 'd': // D#
-        freq = 311.13;
-        break;
-    case 'c': // E
-        freq = 329.63;
-        break;
-    case 'v': // F
-        freq = 349.23;
-        break;
-    case 'g': // F#
-        freq = 369.99;
-        break;
-    case 'b': // G
-        freq = 392.00;
-        break;
-    case 'h': // G#
-        freq = 415.30;
-        break;
-    case 'n': // A
-        freq = 440.00;
-        break;
-    case 'j': // A#
-        freq = 466.16;
-        break;
-    case 'm': // B
-        freq = 493.88;
-        break;
-    case ',': // C
-        freq = 523.25;
-        break;
-    case 'q':
-        freq = 0;
-        break;
-    }
-
-}
-
-
-void getFreq(){
-
-
-
-    while(1){
-
-        char key = getch();
-        setFreq(key);
-
-        if (freq == 0)
-            return;
-    }
-
-}
 
 
 int main (int argc, char *argv[]){
@@ -172,23 +150,13 @@ int main (int argc, char *argv[]){
         return -1;
     }
 
-    initscr();
-    clear();
-    noecho();
-    cbreak();
-
 
     std::thread audio_thread;
-    std::thread input_thread;
 
     audio_thread = std::thread(make_sound, pcm_handle);
-    input_thread = std::thread(getFreq);
+    InputThread input_thread(&event_queue);
 
     audio_thread.join();
-    input_thread.join();
-
-    nocbreak();
-    endwin();
 
 
     return 0;

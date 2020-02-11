@@ -17,6 +17,8 @@
 #include <iostream>
 #include <unistd.h>
 
+#include "EventQueue.hpp"
+
 #define KEYBOARD_DEV "/dev/input/event5" // TODO: make setup-able
 
 struct keyboard_state {
@@ -27,10 +29,10 @@ struct keyboard_state {
 class Keyboard {
 
 public:
-    Keyboard();
+
+    Keyboard(EventQueue * _queue);
     ~Keyboard();
     short getKeyState(short key);
-    void readEv();
     void keyboardLoop();
 
 private:
@@ -40,6 +42,7 @@ private:
     std::thread loop;
     bool active;
     char name[256];
+    EventQueue * queue;
 
 
 
