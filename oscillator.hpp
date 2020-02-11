@@ -25,6 +25,7 @@ public:
   Oscillator(float _analog_freq, int _sample_freq, float * _buffer);
   Oscillator(float _analog_freq, int _sample_freq, WaveType _type);
   Oscillator(float _analog_freq, int _sample_freq, float * buffer, WaveType _type);
+  ~Oscillator();
 public:
   Waveform * waveform;    // Waveform gen
   float norm_freq;        // Normalized frequency (cycles / sample)

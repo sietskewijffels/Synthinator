@@ -15,9 +15,9 @@
 #define SAMPLE_FREQ 48000
 
 float buffer[BUF_SIZE];
-float freq = 440;
-unsigned char gain  = 0x10;
 
+unsigned char gain  = 0x10;
+float freq = 0;
 //Oscillator osc = Oscillator(freq, SAMPLE_FREQ, WaveType::WAVE_SINE);
 EventQueue event_queue;
 
@@ -26,52 +26,58 @@ std::vector<Oscillator> playing;
 int onPlayback(snd_pcm_t *pcm_handle, snd_pcm_sframes_t nframes){
 
     // This should probably happen in a separate thread..
-    if (!event_queue.queue.empty()){
+
+    while (!event_queue.queue.empty()){
 
         //std::cerr << "Reading event" << std::endl;
 
-
             // check what event it was
-            if (event_queue.queue.begin()->type == NOTE_OFF && event_queue.queue.begin()->freq != 0){
 
-                std::cerr << "NOTE OFF" << event_queue.queue.begin()->freq << std::endl;
+            if (event_queue.queue.front().type == NOTE_OFF && event_queue.queue.front().freq != 0){
+
+                //std::cerr << "NOTE OFF" << event_queue.queue.begin()->freq << std::endl;
                 // NOTE_OFF so remove from vector of playing notes
                 for (std::vector<Oscillator>::iterator it = playing.begin(); it != playing.end(); it++){
 
-                    if (it->getAnalogFreq() == event_queue.queue.begin()->freq){
+                    if (it->getAnalogFreq() == event_queue.queue.front().freq){
 
-                        free(it->buffer);
-                        std::cerr << "Removing " << it->getAnalogFreq() << std::endl;
+                        std::cerr << "NOTE OFF " << it->getAnalogFreq() << std::endl;
                         playing.erase(it);
                         break;
 
                     }
                 }
 
-            } else if (event_queue.queue.begin()->freq != 0) {
+            } else if (event_queue.queue.front().type == NOTE_ON && event_queue.queue.front().freq != 0) {
                 // NOTE_ON create new oscillator and add to playing notes
-                float * buff = (float*) malloc(sizeof(float) * BUF_SIZE);
-                Oscillator osc(event_queue.queue.begin()->freq, SAMPLE_FREQ, buff, WaveType::WAVE_SINE);
-
-                playing.push_back(osc);
-                std::cerr << "NOTE ON " << event_queue.queue.begin()->freq << std::endl;
+                Oscillator osci(event_queue.queue.front().freq, SAMPLE_FREQ, WaveType::WAVE_SINE);
+                playing.push_back(osci);
+                std::cerr << "NOTE ON " << event_queue.queue.front().freq << std::endl;
             }
 
-            event_queue.queue.pop_back();
+            event_queue.queue_mutex.lock();
+            event_queue.queue.pop();
+            event_queue.queue_mutex.unlock();
 
 
     }
 
+    for (int n = 0; n < BUF_SIZE; n++){
+        buffer[n] = 0;
+    }
+
+    if (!playing.empty()){
     // oscillate all running oscillators
-    for (auto note: playing){
-        note.oscillate();
+        for (auto note: playing){
+            note.oscillate();
 
-        // Print currently playing freqs
-        std::cerr << note.getAnalogFreq() << "\t";
+            // Print currently playing freqs
+            std::cerr << note.getAnalogFreq() << "\t";
 
-        // Add obtained waveform to total buffer
-        for (int n = 0; n < BUF_SIZE; n++){
-            buffer[n] = note.buffer[n];
+            // Add obtained waveform to total buffer
+            for (int n = 0; n < BUF_SIZE; n++){
+                buffer[n] += note.buffer[n] / playing.size();
+            }
         }
     }
 
@@ -94,12 +100,9 @@ void make_sound(snd_pcm_t *pcm_handle){
 
     //osc.buffer = buffer;
 
-    std::cerr << "Buffer size: " << sizeof(buffer) / sizeof(float) << std::endl;
+    std::cerr << "Buffer size: " << BUF_SIZE << std::endl;
 
     while(1){
-
-        if (freq == 0)
-            break;
 
         if (poll(pfds, nfds, 1000) > 0){
             if (pfds->revents > 0){

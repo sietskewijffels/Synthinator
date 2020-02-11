@@ -15,6 +15,9 @@ void EventQueue::append(float freq, Event_type type){
 
     Event event = {type, freq, 1};
 
-    queue.push_back(event);
+    queue_mutex.lock();
+    queue.push(event);
+    queue_mutex.unlock();
+
 
 }

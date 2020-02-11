@@ -20,10 +20,10 @@ Oscillator::Oscillator(float _analog_freq, int _sample_freq, WaveType _type):
 
   normalize();
 
-  
+
   switch (_type){
     case WaveType::WAVE_SINE:
-      waveform = new SineWave(norm_freq, 512);
+      waveform = new SineWave(norm_freq, 512); //TODO: fix magic number
       break;
     case WaveType::WAVE_SQUARE:
       waveform = new SquareWave(norm_freq, sizeof(buffer));
@@ -34,13 +34,16 @@ Oscillator::Oscillator(float _analog_freq, int _sample_freq, WaveType _type):
 
   }
 
+  buffer = (float*) malloc(sizeof(float) * 512);
+
 }
 
 Oscillator::Oscillator(float _analog_freq, int _sample_freq, float * _buffer, WaveType _type):
+    buffer(_buffer),
     analog_freq(_analog_freq),
     sample_freq(_sample_freq),
-    type(_type),
-    buffer(_buffer)
+    type(_type)
+
 
 {
 
@@ -61,12 +64,17 @@ Oscillator::Oscillator(float _analog_freq, int _sample_freq, float * _buffer, Wa
 }
 
 Oscillator::Oscillator(float _analog_freq, int _sample_freq, float * _buffer):
+    buffer(_buffer),
     analog_freq(_analog_freq),
-    sample_freq(_sample_freq),
-    buffer(_buffer)
+    sample_freq(_sample_freq)
+
 
 {
     normalize();
+}
+
+Oscillator::~Oscillator(){
+    //free(buffer);
 }
 
 
