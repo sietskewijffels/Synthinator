@@ -40,19 +40,23 @@ Keyboard::~Keyboard(){
 static float getNote(int key_code){
 
     switch (key_code){
-    case KEY_Z: return Notes::getFreq(NOTE_C);
-    case KEY_S: return Notes::getFreq(NOTE_CS);
-    case KEY_X: return Notes::getFreq(NOTE_D);
-    case KEY_D: return Notes::getFreq(NOTE_DS);
-    case KEY_C: return Notes::getFreq(NOTE_E);
-    case KEY_V: return Notes::getFreq(NOTE_F);
-    case KEY_G: return Notes::getFreq(NOTE_FS);
-    case KEY_B: return Notes::getFreq(NOTE_G);
-    case KEY_H: return Notes::getFreq(NOTE_GS);
-    case KEY_N: return Notes::getFreq(NOTE_A);
-    case KEY_J: return Notes::getFreq(NOTE_AS);
-    case KEY_M: return Notes::getFreq(NOTE_B);
-    case KEY_COMMA: return 2*Notes::getFreq(NOTE_C);
+    case KEY_Z:         return Notes::getFreq(NOTE_C4);
+    case KEY_S:         return Notes::getFreq(NOTE_CS4);
+    case KEY_X:         return Notes::getFreq(NOTE_D4);
+    case KEY_D:         return Notes::getFreq(NOTE_DS4);
+    case KEY_C:         return Notes::getFreq(NOTE_E4);
+    case KEY_V:         return Notes::getFreq(NOTE_F4);
+    case KEY_G:         return Notes::getFreq(NOTE_FS4);
+    case KEY_B:         return Notes::getFreq(NOTE_G4);
+    case KEY_H:         return Notes::getFreq(NOTE_GS4);
+    case KEY_N:         return Notes::getFreq(NOTE_A4);
+    case KEY_J:         return Notes::getFreq(NOTE_AS4);
+    case KEY_M:         return Notes::getFreq(NOTE_B4);
+    case KEY_COMMA:     return Notes::getFreq(NOTE_C5);
+    case KEY_L:         return Notes::getFreq(NOTE_CS5);
+    case KEY_DOT:       return Notes::getFreq(NOTE_D5);
+    case KEY_SEMICOLON: return Notes::getFreq(NOTE_DS5);
+    case KEY_SLASH:     return Notes::getFreq(NOTE_E5);
     }
 
     return 0;
