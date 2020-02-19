@@ -18,7 +18,6 @@ float buffer[BUF_SIZE];
 
 unsigned char gain  = 0x10;
 float freq = 0;
-//Oscillator osc = Oscillator(freq, SAMPLE_FREQ, WaveType::WAVE_SINE);
 EventQueue event_queue;
 
 std::vector<Oscillator> playing;
@@ -29,13 +28,10 @@ int onPlayback(snd_pcm_t *pcm_handle, snd_pcm_sframes_t nframes){
 
     while (!event_queue.queue.empty()){
 
-        //std::cerr << "Reading event" << std::endl;
-
             // check what event it was
 
             if (event_queue.queue.front().type == NOTE_OFF && event_queue.queue.front().freq != 0){
 
-                //std::cerr << "NOTE OFF" << event_queue.queue.begin()->freq << std::endl;
                 // NOTE_OFF so remove from vector of playing notes
                 for (std::vector<Oscillator>::iterator it = playing.begin(); it != playing.end(); it++){
 
@@ -62,6 +58,7 @@ int onPlayback(snd_pcm_t *pcm_handle, snd_pcm_sframes_t nframes){
 
     }
 
+    // Reset buffer
     for (int n = 0; n < BUF_SIZE; n++){
         buffer[n] = 0;
     }
@@ -79,9 +76,9 @@ int onPlayback(snd_pcm_t *pcm_handle, snd_pcm_sframes_t nframes){
                 buffer[n] += note.buffer[n] / playing.size();
             }
         }
+    std::cerr << std::endl;
     }
 
-    std::cerr << std::endl;
 
 
     return snd_pcm_writei(pcm_handle, buffer, nframes);
@@ -152,8 +149,8 @@ int main (int argc, char *argv[]){
 
 
     std::thread audio_thread;
-
     audio_thread = std::thread(make_sound, pcm_handle);
+
     InputThread input_thread(&event_queue);
 
     audio_thread.join();
