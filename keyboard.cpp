@@ -2,6 +2,19 @@
 #include "keyboard.hpp"
 #include "Notes.hpp"
 
+
+/*
+
+Path to the keyboard device. Take care that the device name ends in "kbd" else
+it will only create events when more than six or so keys are pressed simultaneously
+
+As of now, the device can only populate six key events at the same time.
+
+The other devices get events when more than six keys are held..
+
+*/
+const char * Keyboard::keyboard_device = "/dev/input/by-id/usb-Logitech_G413_Carbon_Mechanical_Gaming_Keyboard_196C37623332-event-kbd";
+
 Keyboard::Keyboard(EventQueue * _queue): queue(_queue){
 
     active = false;
@@ -10,7 +23,7 @@ Keyboard::Keyboard(EventQueue * _queue): queue(_queue){
     keyboard_st = new keyboard_state();
 
     keyboard_fd = 0;
-    keyboard_fd = open(KEYBOARD_DEV, O_RDONLY);
+    keyboard_fd = open(keyboard_device, O_RDONLY);
 
     if (keyboard_fd > 0){
 
@@ -74,6 +87,7 @@ void Keyboard::keyboardLoop(){
             if (keyboard_ev->type & EV_KEY){
 
                 if (keyboard_st->keys[keyboard_ev->code] != keyboard_ev->value && keyboard_ev->value != 2){
+
                     keyboard_st->keys[keyboard_ev->code] = keyboard_ev->value;
 
                     float freq = getNote(keyboard_ev->code);
