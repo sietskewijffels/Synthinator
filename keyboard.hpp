@@ -19,8 +19,6 @@
 
 #include "EventQueue.hpp"
 
-#define KEYBOARD_DEV "/dev/input/event5" // TODO: make setup-able
-
 struct keyboard_state {
 
     signed short keys[KEY_CNT];
@@ -43,6 +41,8 @@ private:
     bool active;
     char name[256];
     EventQueue * queue;
+
+    static const char * keyboard_device ;
 
 
 

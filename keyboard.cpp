@@ -2,6 +2,19 @@
 #include "keyboard.hpp"
 #include "Notes.hpp"
 
+
+/*
+
+Path to the keyboard device. Take care that the device name ends in "kbd" else
+it will only create events when more than six or so keys are pressed simultaneously
+
+As of now, the device can only populate six key events at the same time.
+
+The other devices get events when more than six keys are held..
+
+*/
+const char * Keyboard::keyboard_device = "/dev/input/by-id/usb-Logitech_G413_Carbon_Mechanical_Gaming_Keyboard_196C37623332-event-kbd";
+
 Keyboard::Keyboard(EventQueue * _queue): queue(_queue){
 
     active = false;
@@ -10,7 +23,7 @@ Keyboard::Keyboard(EventQueue * _queue): queue(_queue){
     keyboard_st = new keyboard_state();
 
     keyboard_fd = 0;
-    keyboard_fd = open(KEYBOARD_DEV, O_RDONLY);
+    keyboard_fd = open(keyboard_device, O_RDONLY);
 
     if (keyboard_fd > 0){
 
@@ -40,19 +53,23 @@ Keyboard::~Keyboard(){
 static float getNote(int key_code){
 
     switch (key_code){
-    case KEY_Z: return Notes::getFreq(NOTE_C);
-    case KEY_S: return Notes::getFreq(NOTE_CS);
-    case KEY_X: return Notes::getFreq(NOTE_D);
-    case KEY_D: return Notes::getFreq(NOTE_DS);
-    case KEY_C: return Notes::getFreq(NOTE_E);
-    case KEY_V: return Notes::getFreq(NOTE_F);
-    case KEY_G: return Notes::getFreq(NOTE_FS);
-    case KEY_B: return Notes::getFreq(NOTE_G);
-    case KEY_H: return Notes::getFreq(NOTE_GS);
-    case KEY_N: return Notes::getFreq(NOTE_A);
-    case KEY_J: return Notes::getFreq(NOTE_AS);
-    case KEY_M: return Notes::getFreq(NOTE_B);
-    case KEY_COMMA: return 2*Notes::getFreq(NOTE_C);
+    case KEY_Z:         return Notes::getFreq(NOTE_C4);
+    case KEY_S:         return Notes::getFreq(NOTE_CS4);
+    case KEY_X:         return Notes::getFreq(NOTE_D4);
+    case KEY_D:         return Notes::getFreq(NOTE_DS4);
+    case KEY_C:         return Notes::getFreq(NOTE_E4);
+    case KEY_V:         return Notes::getFreq(NOTE_F4);
+    case KEY_G:         return Notes::getFreq(NOTE_FS4);
+    case KEY_B:         return Notes::getFreq(NOTE_G4);
+    case KEY_H:         return Notes::getFreq(NOTE_GS4);
+    case KEY_N:         return Notes::getFreq(NOTE_A4);
+    case KEY_J:         return Notes::getFreq(NOTE_AS4);
+    case KEY_M:         return Notes::getFreq(NOTE_B4);
+    case KEY_COMMA:     return Notes::getFreq(NOTE_C5);
+    case KEY_L:         return Notes::getFreq(NOTE_CS5);
+    case KEY_DOT:       return Notes::getFreq(NOTE_D5);
+    case KEY_SEMICOLON: return Notes::getFreq(NOTE_DS5);
+    case KEY_SLASH:     return Notes::getFreq(NOTE_E5);
     }
 
     return 0;
@@ -70,6 +87,7 @@ void Keyboard::keyboardLoop(){
             if (keyboard_ev->type & EV_KEY){
 
                 if (keyboard_st->keys[keyboard_ev->code] != keyboard_ev->value && keyboard_ev->value != 2){
+
                     keyboard_st->keys[keyboard_ev->code] = keyboard_ev->value;
 
                     float freq = getNote(keyboard_ev->code);
