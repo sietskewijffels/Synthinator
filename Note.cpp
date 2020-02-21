@@ -1,5 +1,4 @@
 #include "Note.hpp"
-#include <iostream>
 
 void Note::normalize(){
 
@@ -23,7 +22,6 @@ Note::Note(const float _analog_freq, const unsigned int _sample_freq, const unsi
     buffer = (float *) malloc(sizeof(float) * _buffer_size);
 
     norm_freq = normalize(_analog_freq);
-    std::cerr << "norm freq = "<< norm_freq << std::endl << "sampple freq = " << sample_freq;
     // Add the base oscillator
     oscillators.emplace_back(norm_freq, WaveType::WAVE_SINE);
 
