@@ -16,8 +16,9 @@ public:
     Note(const float _analog_freq, const int _sample_freq, const unsigned int buffer_size);
 
     void synthesize();
-    void addHarmonic(const float _analog_freq);
+    void addHarmonic(const float _analog_freq, const int sample_freq);
     void addFilter();
+    float getAnalogFreq(){return analog_freq;}
 
     float * buffer;
     unsigned int buffer_size;

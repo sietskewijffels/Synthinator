@@ -6,14 +6,21 @@ Note::Note(const float _analog_freq, const int _sample_freq, const unsigned int 
     analog_freq(_analog_freq)
 {
 
+    // Create buffer
+    buffer = (float *) malloc(sizeof(float) * _buffer_size);
 
     // Add the base oscillator
-    oscillators.emplace_back(_analog_freq, sample_freq, WaveType::WAVE_SINE);
+    oscillators.emplace_back(_analog_freq, _sample_freq, WaveType::WAVE_SINE);
 
 }
 
 
 void Note::synthesize(){
+
+    // Reset buffer
+    for (unsigned int n = 0; n < buffer_size; n++){
+        buffer[n] = 0;
+    }
 
     // Oscillate and sum all harmonics
     for (auto osc: oscillators){
@@ -22,7 +29,7 @@ void Note::synthesize(){
 
         for (unsigned int n = 0; n < buffer_size; n++){
 
-            buffer[n] += osc.buffer[n];
+            buffer[n] += osc.buffer[n] / oscillators.size();
 
         }
     }
@@ -30,11 +37,12 @@ void Note::synthesize(){
     // Run filters on final buffer
 }
 
-void Note::addHarmonic(const float analog_freq){
+void Note::addHarmonic(const float freq, const int sample_freq){
 
+    oscillators.emplace_back(freq, sample_freq, WaveType::WAVE_SINE);
 
 }
 
 void Note::addFilter(){
-    
+
 }
