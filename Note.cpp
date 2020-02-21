@@ -1,16 +1,31 @@
 #include "Note.hpp"
+#include <iostream>
 
+void Note::normalize(){
 
-Note::Note(const float _analog_freq, const int _sample_freq, const unsigned int _buffer_size) :
+    norm_freq = analog_freq / sample_freq;
+
+}
+
+float Note::normalize(const float freq){
+
+    return freq / sample_freq;
+
+}
+
+Note::Note(const float _analog_freq, const unsigned int _sample_freq, const unsigned int _buffer_size) :
     buffer_size(_buffer_size),
-    analog_freq(_analog_freq)
+    analog_freq(_analog_freq),
+    sample_freq(_sample_freq)
 {
 
     // Create buffer
     buffer = (float *) malloc(sizeof(float) * _buffer_size);
 
+    norm_freq = normalize(_analog_freq);
+    std::cerr << "norm freq = "<< norm_freq << std::endl << "sampple freq = " << sample_freq;
     // Add the base oscillator
-    oscillators.emplace_back(_analog_freq, _sample_freq, WaveType::WAVE_SINE);
+    oscillators.emplace_back(norm_freq, WaveType::WAVE_SINE);
 
 }
 
@@ -37,9 +52,9 @@ void Note::synthesize(){
     // Run filters on final buffer
 }
 
-void Note::addHarmonic(const float freq, const int sample_freq){
+void Note::addHarmonic(const float freq){
 
-    oscillators.emplace_back(freq, sample_freq, WaveType::WAVE_SINE);
+    oscillators.emplace_back(normalize(freq), WaveType::WAVE_SINE);
 
 }
 

@@ -13,24 +13,28 @@
 class Note {
 
 public:
-    Note(const float _analog_freq, const int _sample_freq, const unsigned int buffer_size);
+    Note(const float _analog_freq, const unsigned int _sample_freq, const unsigned int buffer_size);
 
     void synthesize();
-    void addHarmonic(const float _analog_freq, const int sample_freq);
+    void addHarmonic(const float _analog_freq);
     void addFilter();
     float getAnalogFreq(){return analog_freq;}
 
     float * buffer;
     unsigned int buffer_size;
 
-private:
     float norm_freq;
     float analog_freq;
+    unsigned int sample_freq;
     WaveType base_type = WaveType::WAVE_SINE;
 
+private:
     // Some datastrucure holding the filter chain
 
     std::vector<Oscillator> oscillators;
+
+    void normalize();
+    float normalize(const float freq);
 
 };
 
