@@ -6,8 +6,9 @@
 #include <iostream>
 #include <vector>
 
-#include "oscillator.hpp"
+//#include "oscillator.hpp"
 #include "EventQueue.hpp"
+#include "Note.hpp"
 
 class AudioThread
 {
@@ -27,8 +28,8 @@ private:
     int onPlayback();
     void makeSound();
 
-    float buffer[buffer_size];
-    std::vector<Oscillator> playing;
+    float buffer[buffer_size]; // TODO: maybe change to std::array
+    std::vector<Note> playing;
 
 
 

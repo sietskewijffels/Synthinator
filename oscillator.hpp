@@ -3,9 +3,6 @@
 
   oscillate() fills the buffer with samples
 
-  Upon construction normalizes the analog frequency.
-  From then only normalized frequency need be used.
-
   Buffer can be pre-allocated, or if NULL is passed it will allocate one.
 */
 
@@ -21,11 +18,10 @@ class Oscillator {
 
 public:
 
-  Oscillator(float _analog_freq, int _sample_freq);
-  Oscillator(float _analog_freq, int _sample_freq, float * _buffer);
-  Oscillator(float _analog_freq, int _sample_freq, WaveType _type);
-  Oscillator(float _analog_freq, int _sample_freq, float * buffer, WaveType _type);
-  ~Oscillator();
+  Oscillator(const float norm_freq);
+  Oscillator(const float norm_freq, float * _buffer);
+  Oscillator(const float norm_freq, WaveType _type);
+  Oscillator(const float norm_freq, float * buffer, WaveType _type);
 public:
   Waveform * waveform;    // Waveform gen
   float norm_freq;        // Normalized frequency (cycles / sample)
@@ -35,15 +31,10 @@ public:
   void oscillate();       // Do oscillate callback thingy
 
 public:
-  void setAnalogFreq(float _freq);
-  void setSampleFreq(int _sample_freq);
   void setType(WaveType _type){ type = _type;}
   WaveType getType(){return type;}
-  float getAnalogFreq(){return analog_freq;}
 
 private:
-  float analog_freq;    // Analog Frequency
-  int sample_freq;      // Sample rate (samples / second)
   WaveType type;        // WaveType
 
 private:

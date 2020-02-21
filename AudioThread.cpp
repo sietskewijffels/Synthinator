@@ -78,11 +78,11 @@ int AudioThread::onPlayback(){
             if (event_queue->queue.front().type == NOTE_OFF && event_queue->queue.front().freq != 0){
 
                 // NOTE_OFF so remove from vector of playing notes
-                for (std::vector<Oscillator>::iterator it = playing.begin(); it != playing.end(); it++){
+                for (std::vector<Note>::iterator it = playing.begin(); it != playing.end(); it++){
 
-                    if (it->getAnalogFreq() == event_queue->queue.front().freq){
+                    if (it->analog_freq == event_queue->queue.front().freq){
 
-                        std::cerr << "NOTE OFF " << it->getAnalogFreq() << std::endl;
+                        std::cerr << "NOTE OFF " << it->analog_freq << std::endl;
                         playing.erase(it);
                         break;
 
@@ -91,8 +91,8 @@ int AudioThread::onPlayback(){
 
             } else if (event_queue->queue.front().type == NOTE_ON && event_queue->queue.front().freq != 0) {
                 // NOTE_ON create new oscillator and add to playing notes
-                Oscillator osci(event_queue->queue.front().freq, sample_freq, WaveType::WAVE_SINE);
-                playing.push_back(osci);
+                Note note(event_queue->queue.front().freq, sample_freq, buffer_size);
+                playing.push_back(note);
                 std::cerr << "NOTE ON " << event_queue->queue.front().freq << std::endl;
             }
 
@@ -111,13 +111,14 @@ int AudioThread::onPlayback(){
     if (!playing.empty()){
     // oscillate all running oscillators
         for (auto note: playing){
-            note.oscillate();
+
+            note.synthesize();
 
             // Print currently playing freqs
-            std::cerr << note.getAnalogFreq() << "\t";
+            std::cerr << note.analog_freq << "\t";
 
             // Add obtained waveform to total buffer
-            for (unsigned int n = 0; n < buffer_size; n++){
+            for (unsigned int n = 0; n < buffer_size; n++ ){
                 buffer[n] += note.buffer[n] / playing.size();
             }
         }
