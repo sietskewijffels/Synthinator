@@ -25,7 +25,8 @@ enum State {
     ATTACK,
     DECAY,
     SUSTAIN,
-    RELEASE
+    RELEASE,
+    FINISHED
 };
 
 class EnvelopeFilter : public Filter {
@@ -40,11 +41,11 @@ public:
     ADSR * getADSR() {return &adsr;}
 
     void doFilterings() override;
+    State envelope_phase = ATTACK;
 
 private:
     ADSR adsr;
     int phase = 0;
-    State envelope_phase = ATTACK;
 
 };
 

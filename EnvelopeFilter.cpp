@@ -1,5 +1,5 @@
 #include "EnvelopeFilter.hpp"
-#include <iostream>
+//#include <iostream>
 
 void EnvelopeFilter::doFilterings(){
 
@@ -31,7 +31,15 @@ void EnvelopeFilter::doFilterings(){
             break;
 
         case(RELEASE):
-            y = adsr.sustain - (adsr.release * phase);
+            y = -(adsr.sustain / (float)adsr.release) * phase + adsr.sustain;
+            if (y <= 0){
+                y = 0;
+                envelope_phase = FINISHED;
+            }
+            //std::cerr << "Release " << y << std::endl;
+            break;
+        case(FINISHED):
+            y = 0;
             break;
         }
 

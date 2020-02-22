@@ -78,12 +78,12 @@ int AudioThread::onPlayback(){
             if (event_queue->queue.front().type == NOTE_OFF && event_queue->queue.front().freq != 0){
 
                 // NOTE_OFF so remove from vector of playing notes
-                for (std::vector<Note>::iterator it = playing.begin(); it != playing.end(); it++){
+                for (auto it: playing){
 
-                    if (it->analog_freq == event_queue->queue.front().freq){
+                    if (it.analog_freq == event_queue->queue.front().freq){
 
-                        std::cerr << "NOTE OFF " << it->analog_freq << std::endl;
-                        playing.erase(it);
+                        std::cerr << "NOTE OFF " << it.analog_freq << std::endl;
+                        it.signalOff();
                         break;
 
                     }
@@ -109,17 +109,23 @@ int AudioThread::onPlayback(){
     }
 
     if (!playing.empty()){
-    // oscillate all running oscillators
-        for (auto note: playing){
 
-            note.synthesize();
+    // oscillate all running oscillators
+        for (auto note = playing.begin(); note < playing.end(); note++){
+
+            note->synthesize();
+
+            if (!note->isActive()){
+                //std::cerr << "HOUDOE HEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" << std::endl;
+                note = playing.erase(note);
+            }
 
             // Print currently playing freqs
-            std::cerr << note.analog_freq << "\t";
+            std::cerr << note->analog_freq << note->isActive() << "\t";
 
             // Add obtained waveform to total buffer
             for (unsigned int n = 0; n < buffer_size; n++ ){
-                buffer[n] += note.buffer[n] / playing.size();
+                buffer[n] += note->buffer[n] * 0.1666 ;
             }
         }
     std::cerr << std::endl;

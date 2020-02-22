@@ -6,6 +6,8 @@
     - Each note holds its own filter structure so that:
         - Different notes can have different filters apllied
         - Time based effects are easier to implement (e.g. ADSR filters)
+    - Note has an active flag which gets set to false when notehas reached the end of the envelope
+    - First element in the filter chain should ALWAYS be the base envelope
 
 */
 #ifndef _NOTE_HPP
@@ -15,6 +17,7 @@
 
 #include "oscillator.hpp"
 #include "Filter.hpp"
+#include "EnvelopeFilter.hpp"
 
 class Note {
 
@@ -22,9 +25,11 @@ public:
     Note(const float _analog_freq, const unsigned int _sample_freq, const unsigned int buffer_size);
 
     void synthesize();
+    void signalOff();
     void addHarmonic(const float _analog_freq);
     void addFilter();
     float getAnalogFreq(){return analog_freq;}
+    bool isActive(){return note_active;}
 
     float * buffer;
     unsigned int buffer_size;
@@ -33,6 +38,9 @@ public:
     float analog_freq;
     unsigned int sample_freq;
     WaveType base_type = WaveType::WAVE_SINE;
+    EnvelopeFilter * base_envelope;
+
+    bool note_active = true; // false when note is finished ringing out
 
 private:
     // Some datastrucure holding the filter chain
