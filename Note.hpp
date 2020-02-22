@@ -2,6 +2,11 @@
 
     Top level class of a single audible note
 
+    - Each note can have a number of oscillators.
+    - Each note holds its own filter structure so that:
+        - Different notes can have different filters apllied
+        - Time based effects are easier to implement (e.g. ADSR filters)
+
 */
 #ifndef _NOTE_HPP
 #define _NOTE_HPP
@@ -9,6 +14,7 @@
 #include <vector>
 
 #include "oscillator.hpp"
+#include "Filter.hpp"
 
 class Note {
 
@@ -30,7 +36,7 @@ public:
 
 private:
     // Some datastrucure holding the filter chain
-
+    std::vector<Filter> filter_chain;
     std::vector<Oscillator> oscillators;
 
     void normalize();
