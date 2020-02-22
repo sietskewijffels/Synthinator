@@ -28,12 +28,18 @@ Note::Note(const float _analog_freq, const unsigned int _sample_freq, const unsi
     // Add the base oscillator
     oscillators.emplace_back(norm_freq, WaveType::WAVE_SINE);
 
-    // Envelope filter test..
+    // Add some harmonics for shits n giggles
+    oscillators.emplace_back(norm_freq / 2, WaveType::WAVE_SINE);
+    oscillators.emplace_back(norm_freq / 4, WaveType::WAVE_SINE);
+    oscillators.emplace_back(norm_freq / 8, WaveType::WAVE_SINE);
+    oscillators.emplace_back(norm_freq * 2, WaveType::WAVE_SINE);
+    oscillators.emplace_back(norm_freq * 4, WaveType::WAVE_SINE);
+
     /*
         Initialize the base envelope and place at first position in chain
     */
 
-    base_envelope = new EnvelopeFilter(buffer, 512, 10000, 10000, 0.8, 100000);
+    base_envelope = new EnvelopeFilter(buffer, 512, 5000, 500, 0.95, 6000);
 
 }
 

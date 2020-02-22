@@ -68,13 +68,9 @@ void AudioThread::makeSound(){
 
 int AudioThread::onPlayback(){
 
-
-    // This should probably happen in a separate thread..
-
     while (!event_queue->queue.empty()){
 
             // check what event it was
-
             if (event_queue->queue.front().type == NOTE_OFF && event_queue->queue.front().freq != 0){
 
                 // NOTE_OFF so remove from vector of playing notes
@@ -84,8 +80,7 @@ int AudioThread::onPlayback(){
 
                         std::cerr << "NOTE OFF " << it.analog_freq << std::endl;
                         it.signalOff();
-                        break;
-
+                        
                     }
                 }
 
