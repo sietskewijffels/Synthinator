@@ -110,22 +110,26 @@ int AudioThread::onPlayback(){
 
     if (!playing.empty()){
 
-    // oscillate all running oscillators
+        // Remove the finished notes before synthesizing to avoid pops
         for (auto note = playing.begin(); note < playing.end(); note++){
-
-            note->synthesize();
 
             if (!note->isActive()){
                 //std::cerr << "HOUDOE HEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" << std::endl;
                 note = playing.erase(note);
             }
+        }
+
+    // oscillate all running oscillators
+        for (auto note = playing.begin(); note < playing.end(); note++){
+
+            note->synthesize();
 
             // Print currently playing freqs
             std::cerr << note->analog_freq << note->isActive() << "\t";
 
             // Add obtained waveform to total buffer
             for (unsigned int n = 0; n < buffer_size; n++ ){
-                buffer[n] += note->buffer[n] * 0.1666 ;
+                buffer[n] += note->buffer[n] * 0.15;
             }
         }
     std::cerr << std::endl;

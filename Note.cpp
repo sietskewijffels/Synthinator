@@ -75,6 +75,7 @@ void Note::signalOff(){
 
     // Signal the base envelope to release
     base_envelope->envelope_phase = RELEASE;
+    envelope_phase = RELEASE;
 
 
 }

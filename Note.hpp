@@ -7,7 +7,6 @@
         - Different notes can have different filters apllied
         - Time based effects are easier to implement (e.g. ADSR filters)
     - Note has an active flag which gets set to false when notehas reached the end of the envelope
-    - First element in the filter chain should ALWAYS be the base envelope
 
 */
 #ifndef _NOTE_HPP
@@ -39,6 +38,7 @@ public:
     unsigned int sample_freq;
     WaveType base_type = WaveType::WAVE_SINE;
     EnvelopeFilter * base_envelope;
+    State envelope_phase;
 
     bool note_active = true; // false when note is finished ringing out
 
