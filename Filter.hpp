@@ -14,11 +14,9 @@
 class Filter {
 
 public:
-    Filter(float * _buffer, std::size_t _frame_length) :
-        buffer(_buffer), frame_length(_frame_length){}
+    Filter(float * _buffer, std::size_t _frame_length);
 
-    virtual ~Filter();
-    virtual void doFilterings();
+    virtual void doFilterings() = 0;
 
     float * buffer;
     std::size_t frame_length;

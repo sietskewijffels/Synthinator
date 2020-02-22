@@ -36,7 +36,7 @@ public:
 
 private:
     // Some datastrucure holding the filter chain
-    std::vector<Filter> filter_chain;
+    std::vector<Filter *> filter_chain;
     std::vector<Oscillator> oscillators;
 
     void normalize();

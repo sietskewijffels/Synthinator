@@ -35,6 +35,7 @@ public:
     EnvelopeFilter(float * buffer, std::size_t frame_length, const int _attack, const int _decay, const float _sustain, const int _release)
         : Filter(buffer, frame_length),
         adsr({_attack, _decay, _sustain, _release}){}
+    ~EnvelopeFilter();
 
     ADSR * getADSR() {return &adsr;}
 

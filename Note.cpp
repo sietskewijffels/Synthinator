@@ -1,4 +1,6 @@
 #include "Note.hpp"
+#include "EnvelopeFilter.hpp"
+#include "Filter.hpp"
 
 void Note::normalize(){
 
@@ -25,6 +27,11 @@ Note::Note(const float _analog_freq, const unsigned int _sample_freq, const unsi
     // Add the base oscillator
     oscillators.emplace_back(norm_freq, WaveType::WAVE_SINE);
 
+    // Envelope filter test..
+    Filter * envelope = new EnvelopeFilter(buffer, 512, 10000, 10000, 0.8, 0);
+
+    filter_chain.push_back(envelope);
+
 }
 
 
@@ -48,6 +55,9 @@ void Note::synthesize(){
     }
 
     // Run filters on final buffer
+    for (auto filter: filter_chain){
+        filter->doFilterings();
+    }
 }
 
 void Note::addHarmonic(const float freq){
