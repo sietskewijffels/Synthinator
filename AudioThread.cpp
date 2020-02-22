@@ -68,24 +68,19 @@ void AudioThread::makeSound(){
 
 int AudioThread::onPlayback(){
 
-
-    // This should probably happen in a separate thread..
-
     while (!event_queue->queue.empty()){
 
             // check what event it was
-
             if (event_queue->queue.front().type == NOTE_OFF && event_queue->queue.front().freq != 0){
 
                 // NOTE_OFF so remove from vector of playing notes
-                for (std::vector<Note>::iterator it = playing.begin(); it != playing.end(); it++){
+                for (auto it: playing){
 
-                    if (it->analog_freq == event_queue->queue.front().freq){
+                    if (it.analog_freq == event_queue->queue.front().freq){
 
-                        std::cerr << "NOTE OFF " << it->analog_freq << std::endl;
-                        playing.erase(it);
-                        break;
-
+                        std::cerr << "NOTE OFF " << it.analog_freq << std::endl;
+                        it.signalOff();
+                        
                     }
                 }
 
@@ -109,17 +104,27 @@ int AudioThread::onPlayback(){
     }
 
     if (!playing.empty()){
-    // oscillate all running oscillators
-        for (auto note: playing){
 
-            note.synthesize();
+        // Remove the finished notes before synthesizing to avoid pops
+        for (auto note = playing.begin(); note < playing.end(); note++){
+
+            if (!note->isActive()){
+                //std::cerr << "HOUDOE HEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" << std::endl;
+                note = playing.erase(note);
+            }
+        }
+
+    // oscillate all running oscillators
+        for (auto note = playing.begin(); note < playing.end(); note++){
+
+            note->synthesize();
 
             // Print currently playing freqs
-            std::cerr << note.analog_freq << "\t";
+            std::cerr << note->analog_freq << note->isActive() << "\t";
 
             // Add obtained waveform to total buffer
             for (unsigned int n = 0; n < buffer_size; n++ ){
-                buffer[n] += note.buffer[n] / playing.size();
+                buffer[n] += note->buffer[n] * 0.15;
             }
         }
     std::cerr << std::endl;
