@@ -1,10 +1,11 @@
 # Synthinator
 
-A command line synthesizer
+A command line synthesizer.
 
-# Coming soon:
+# To Do:
 
-* Implement envelope filters
+* Configurable Keyboard device
+* Actual UI
 * Add stereo interleaving
 * Fix magic numbers
 * Implement different waveforms
@@ -12,4 +13,6 @@ A command line synthesizer
 
 # Notes:
 
-> Take care that the correct keyboard device is used (even when name is correct) events might only be obtained when multiple keys are held simultaneously when worng device is used.
+> Take care that the correct keyboard device is used (even when name is correct) events might only be obtained when multiple keys are held simultaneously when wrong device is used.
+
+As of right now the keyboard device is hard-coded as a constant in `keyboard.cpp`.
