@@ -1,17 +1,31 @@
 
-CC = g++
+CXX := g++
 
-CFLAGS = -Wall -Wextra -lasound -pthread
+EXE := synth
 
-DEPS = Filter.hpp EnvelopeFilter.hpp Note.hpp AudioThread.hpp EventQueue.hpp InputThread.hpp keyboard.hpp oscillator.hpp waveform.hpp
-OBJ = Filter.o EnvelopeFilter.o Note.o AudioThread.o EventQueue.o InputThread.o keyboard.o oscillator.o waveform.o main.o
+CFLAGS := -Wall -Wextra
 
+SRC_DIR := src
+OBJ_DIR := bin
 
-./bin/%.o: %.cpp $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+SRC := $(wildcard $(SRC_DIR)/*.cpp)
 
-synth: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS)
+OBJ := $(SRC:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
+
+LDFLAGS :=  -lasound -pthread
+
+all: $(EXE)
+
+$(EXE): $(OBJ)
+	$(CXX) $^ -o $@ $(LDFLAGS) 
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+	$(CXX) -c -o $@ $< $(CFLAGS)
+
+$(OBJ_DIR):
+	mkdir $@
 
 clean:
-	rm *.o
+	$(RM) -r $(OBJ_DIR)
+
+.PHONY: all clean
