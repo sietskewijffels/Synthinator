@@ -46,3 +46,7 @@ A lot of things would most likely be a lot nicer with a dedicated datatype class
 > Take care that the correct keyboard device is used (even when name is correct) events might only be obtained when multiple keys are held simultaneously when wrong device is used.
 
 As of right now the keyboard device is hard-coded as a constant in `keyboard.cpp`.
+
+## Root privileges
+
+Because the keyboard is read directly from the device, the keyboard class needs root priviles to run..
