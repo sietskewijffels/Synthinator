@@ -68,6 +68,8 @@ void AudioThread::makeSound(){
 
 int AudioThread::onPlayback(){
 
+    // Handle all events
+    // NOTE: this might get flooded with events and never exit.
     while (!event_queue->queue.empty()){
 
             // check what event it was
