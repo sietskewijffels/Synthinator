@@ -2,6 +2,8 @@
 
     Wrapper class for event queue handling
 
+    Queue entries are IDed by their base frequency
+
 */
 
 #ifndef _EVENTQUEUE_HPP
@@ -27,7 +29,6 @@ typedef struct {
 class EventQueue {
 
 public:
-    void handleNext(); // Handle the next event and pop
     void append(float freq, Event_type type);
     std::queue<Event> queue;
     std::mutex queue_mutex;
