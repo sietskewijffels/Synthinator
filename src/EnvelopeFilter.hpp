@@ -37,7 +37,6 @@ public:
         : adsr({_attack, _decay, _sustain, _release}){};
     ~EnvelopeFilter();
 
-    ADSR * getADSR() {return &adsr;}
 
     FrameBuffer& doFilterings(FrameBuffer& buffer) override;
     State envelope_phase = ATTACK;
