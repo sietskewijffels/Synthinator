@@ -25,6 +25,7 @@ A command line synthesizer.
 
 # To Do:
 
+* More cleanup
 * Configurable Keyboard device
 * Actual UI
 * Add stereo interleaving
@@ -34,6 +35,14 @@ A command line synthesizer.
 
 # Notes:
 
+## Buffer frame datatype is needed
+
+A lot of things would most likely be a lot nicer with a dedicated datatype class for frame buffers.
+
+* Allows objects to get frame and maybe sample_freq from their instead of providing in constructor.
+* Allows an `operator+`
+
+## Keyboard device
 > Take care that the correct keyboard device is used (even when name is correct) events might only be obtained when multiple keys are held simultaneously when wrong device is used.
 
 As of right now the keyboard device is hard-coded as a constant in `keyboard.cpp`.
