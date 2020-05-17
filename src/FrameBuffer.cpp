@@ -1,9 +1,16 @@
 #include "FrameBuffer.hpp"
 
+FrameBuffer::FrameBuffer(){
+
+    for (std::size_t i = 0; i < frame_size; i ++){
+        buffer[i] = 0;
+    }
+}
+
 FrameBuffer& FrameBuffer::operator+=(const FrameBuffer& rhs){
 
 
-    for (unsigned int i = 0; i < frame_size; i++){
+    for (std::size_t i = 0; i < frame_size; i++){
 
         buffer[i] += rhs[i];
     }

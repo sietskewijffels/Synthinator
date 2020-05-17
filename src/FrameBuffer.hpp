@@ -1,5 +1,7 @@
 /*
     Buffer datatype
+
+    Initializes to 0
 */
 #ifndef FRAMEBUFFER_HPP
 #define FRAMEBUFFER_HPP
@@ -10,8 +12,10 @@ class FrameBuffer {
 
 public:
 
-    static const unsigned int frame_size = 512;
-    static const unsigned int num_channels = 1;
+    FrameBuffer();
+
+    static const std::size_t frame_size = 512;
+    static const std::size_t num_channels = 1;
 
     FrameBuffer& operator+=(const FrameBuffer& rhs);
     const FrameBuffer operator+(const FrameBuffer& rhs);
