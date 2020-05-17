@@ -9,17 +9,13 @@
 #ifndef _FILTER_HPP
 #define _FILTER_HPP
 
-#include <cstdlib>
+#include "FrameBuffer.hpp"
 
 class Filter {
 
 public:
-    Filter(float * _buffer, std::size_t _frame_length);
 
-    virtual void doFilterings() = 0;
-
-    float * buffer;
-    std::size_t frame_length;
+    virtual FrameBuffer& doFilterings(FrameBuffer& buffer) = 0;
 };
 
 #endif
