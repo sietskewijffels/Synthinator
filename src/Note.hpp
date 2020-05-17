@@ -17,22 +17,21 @@
 #include "oscillator.hpp"
 #include "Filter.hpp"
 #include "EnvelopeFilter.hpp"
+#include "FrameBuffer.hpp"
 
 class Note {
 
 public:
-    Note(const float _analog_freq, const unsigned int _sample_freq, const unsigned int buffer_size);
+    Note(const float _analog_freq, const unsigned int _sample_freq);
 
-    void synthesize();
+    FrameBuffer& synthesize();
     void signalOff();
     void addHarmonic(const float _analog_freq);
     void addFilter();
     float getAnalogFreq(){return analog_freq;}
     bool isActive(){return note_active;}
 
-    float * buffer;
-    unsigned int buffer_size;
-
+    FrameBuffer buffer;
     float norm_freq;
     float analog_freq;
     unsigned int sample_freq;

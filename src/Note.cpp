@@ -15,14 +15,10 @@ float Note::normalize(const float freq){
 
 }
 
-Note::Note(const float _analog_freq, const unsigned int _sample_freq, const unsigned int _buffer_size) :
-    buffer_size(_buffer_size),
+Note::Note(const float _analog_freq, const unsigned int _sample_freq) :
     analog_freq(_analog_freq),
     sample_freq(_sample_freq)
 {
-
-    // Create buffer
-    buffer = (float *) malloc(sizeof(float) * _buffer_size);
 
     norm_freq = normalize(_analog_freq);
     // Add the base oscillator
@@ -39,42 +35,36 @@ Note::Note(const float _analog_freq, const unsigned int _sample_freq, const unsi
         Initialize the base envelope and place at first position in chain
     */
 
-    base_envelope = new EnvelopeFilter(buffer, 512, 5000, 500, 0.95, 6000);
+    base_envelope = new EnvelopeFilter(5000, 500, 0.95, 6000);
 
 }
 
 
-void Note::synthesize(){
+FrameBuffer& Note::synthesize(){
 
-    // Reset buffer
-    for (unsigned int n = 0; n < buffer_size; n++){
-        buffer[n] = 0;
-    }
+
 
     if (base_envelope->envelope_phase != FINISHED){
 
         // Oscillate and sum all harmonics
         for (auto osc: oscillators){
 
-            osc.oscillate();
+            buffer += osc.oscillate() * (1 / oscillators.size());
 
-            for (unsigned int n = 0; n < buffer_size; n++){
-
-                buffer[n] += osc.buffer[n] / oscillators.size();
-
-            }
         }
 
         // Run filters on final buffer
         for (auto filter: filter_chain){
-            filter->doFilterings();
+            filter->doFilterings(buffer);
         }
 
         // Finally run base envelope
-        base_envelope->doFilterings();
+        base_envelope->doFilterings(buffer);
     } else {
         note_active = false;
     }
+
+    return buffer;
 }
 
 void Note::signalOff(){
