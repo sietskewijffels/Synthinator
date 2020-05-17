@@ -13,6 +13,7 @@ class FrameBuffer {
 public:
 
     FrameBuffer();
+    float * get() {return buffer;};
 
     static const std::size_t frame_size = 512;
     static const std::size_t num_channels = 1;
