@@ -19,6 +19,10 @@ public:
 
     FrameBuffer& operator+=(const FrameBuffer& rhs);
     const FrameBuffer operator+(const FrameBuffer& rhs);
+
+    FrameBuffer& operator*=(float val);
+    const FrameBuffer operator*(float val);
+
     const float& operator[](const std::size_t index) const {return buffer[index];};
     float& operator[](const std::size_t index){return buffer[index];};
 
