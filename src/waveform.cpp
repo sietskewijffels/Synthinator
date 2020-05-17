@@ -6,23 +6,19 @@
 
 
 
-Waveform::Waveform(float _freq, unsigned int _num_samples):
-                        norm_freq(_freq), num_samples(_num_samples){
-
-    //std::cerr << "Wollah Waveform" << std::endl;
+Waveform::Waveform(float _freq):
+                        norm_freq(_freq){
 
 }
 
-void Waveform::setNormFreq(float _freq){norm_freq = _freq;}
-
-void Waveform::setNumSamples(unsigned int samples){num_samples = samples;}
 
 
 
-void SineWave::generate(float * buffer){
 
-  int n;
-  for (n = 0; n < num_samples; n++){
+FrameBuffer& SineWave::generate(){
+
+  unsigned int n;
+  for (n = 0; n < FrameBuffer::frame_size; n++){
     // TODO: this should probably be an approximation..
     float sample = std::sin(3.14151598 * 2 * norm_freq * n + phase);
 
@@ -33,12 +29,14 @@ void SineWave::generate(float * buffer){
 
   phase = 3.141598 * 2 *norm_freq * n + phase;
 
-
+  return buffer;
 }
 
 
-void SquareWave::generate(float * buffer){
+FrameBuffer& SquareWave::generate(){
 
-  for (int i = 0; i < sizeof(buffer); i++)
-    buffer[i] = 0;
+    for (std::size_t i = 0; i < FrameBuffer::frame_size; i++)
+        buffer[i] = 0;
+
+    return buffer;
 }
