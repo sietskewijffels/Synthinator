@@ -16,8 +16,8 @@ class Waveform {
 
 public:
   Waveform(float _freq);
-  virtual ~Waveform() = 0;
-  virtual FrameBuffer& generate();
+  virtual ~Waveform() = default;
+  virtual FrameBuffer& generate() = 0;
   FrameBuffer buffer;
 
 protected:
