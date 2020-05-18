@@ -1,4 +1,8 @@
 
+# Weird double free
+
+Caused by `FrameBuffer::operator*()`. On return, the copy of `*this` gets destroyed and thus frees the buffer. (I think...)
+
 # Weird segfault
 
 * Seems to be caused by `delete waveform;` in `Oscillator::~Oscillator`;
