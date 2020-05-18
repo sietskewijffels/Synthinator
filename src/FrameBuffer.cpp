@@ -1,10 +1,18 @@
 #include "FrameBuffer.hpp"
 
+
 FrameBuffer::FrameBuffer(){
 
-    for (std::size_t i = 0; i < frame_size; i ++){
+    buffer = new float[frame_size * num_channels];
+
+    for (std::size_t i = 0; i < frame_size * num_channels; i++){
         buffer[i] = 0;
     }
+}
+
+FrameBuffer::~FrameBuffer(){
+
+    delete[] buffer;
 }
 
 FrameBuffer& FrameBuffer::operator+=(const FrameBuffer& rhs){
