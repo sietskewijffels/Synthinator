@@ -28,7 +28,7 @@ private:
     void makeSound();
 
     FrameBuffer buffer;
-    std::vector<Note> playing;
+    std::vector<std::shared_ptr<Note>> playing;
 
 
 

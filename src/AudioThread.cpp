@@ -78,17 +78,17 @@ int AudioThread::onPlayback(){
                 // NOTE_OFF so remove from vector of playing notes
                 for (auto it: playing){
 
-                    if (it.analog_freq == event_queue->queue.front().freq){
+                    if (it->analog_freq == event_queue->queue.front().freq){
 
-                        std::cerr << "NOTE OFF " << it.analog_freq << std::endl;
-                        it.signalOff();
+                        std::cerr << "NOTE OFF " << it->analog_freq << std::endl;
+                        it->signalOff();
 
                     }
                 }
 
             } else if (event_queue->queue.front().type == NOTE_ON && event_queue->queue.front().freq != 0) {
                 // NOTE_ON create new oscillator and add to playing notes
-                Note note(event_queue->queue.front().freq, sample_freq);
+                std::shared_ptr<Note> note(new Note(event_queue->queue.front().freq, sample_freq));
                 playing.push_back(note);
                 std::cerr << "NOTE ON " << event_queue->queue.front().freq << std::endl;
             }
@@ -105,22 +105,20 @@ int AudioThread::onPlayback(){
 
     if (!playing.empty()){
 
-        // Remove the finished notes before synthesizing to avoid pops
-        for (auto note = playing.begin(); note < playing.end(); note++){
-
-            if (!note->isActive()){
-                //std::cerr << "HOUDOE HEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" << std::endl;
-                note = playing.erase(note);
-            }
-        }
-
     // oscillate all running oscillators
         for (auto note = playing.begin(); note < playing.end(); note++){
 
-            // Print currently playing freqs
-            std::cerr << note->analog_freq << "\t";
+            // Skip finished notes
+            if (!(*note)->isActive()){
+                //std::cerr << "HOUDOE HEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" << std::endl;
+                note = playing.erase(note);
+                continue;
+            }
 
-            buffer += (note->synthesize() * 0.15);
+            // Print currently playing freqs
+            std::cerr << (*note)->analog_freq << "\t";
+
+            buffer += ((*note)->synthesize() * 0.15);
         }
     std::cerr << std::endl;
     }
