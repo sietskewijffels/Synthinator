@@ -48,7 +48,7 @@ FrameBuffer& Note::synthesize(){
         // Oscillate and sum all harmonics
         for (auto osc: oscillators){
 
-            buffer += osc.oscillate() * (1 / oscillators.size());
+            buffer += osc.oscillate() *  (1 /(float) oscillators.size());
 
         }
 
