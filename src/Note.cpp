@@ -24,21 +24,17 @@ Note::Note(const float _analog_freq, const unsigned int _sample_freq) :
     // Add the base oscillator
     oscillators.emplace_back(norm_freq, WaveType::WAVE_SINE);
 
-    std::cerr << "Gonna make them oscillators" << std::endl;
     // Add some harmonics for shits n giggles
     oscillators.emplace_back(norm_freq / 2, WaveType::WAVE_SINE);
     oscillators.emplace_back(norm_freq / 4, WaveType::WAVE_SINE);
     oscillators.emplace_back(norm_freq / 8, WaveType::WAVE_SINE);
     oscillators.emplace_back(norm_freq * 2, WaveType::WAVE_SINE);
     //oscillators.emplace_back(norm_freq * 4, WaveType::WAVE_SINE);
-    std::cerr << "Made them oscillators" << std::endl;
     /*
         Initialize the base envelope and place at first position in chain
     */
 
     base_envelope = new EnvelopeFilter(5000, 500, 0.95, 6000);
-
-    std::cerr << "Made new Note object!" << std::endl;
 
 }
 
