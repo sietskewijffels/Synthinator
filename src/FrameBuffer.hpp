@@ -1,5 +1,5 @@
 /*
-    Buffer datatype
+    Heap Based Buffer datatype
 
     Initializes to 0
 */
