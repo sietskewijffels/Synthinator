@@ -14,7 +14,7 @@ Oscillator::Oscillator(const float _norm_freq, WaveType _type):
 
 
 
-  switch (_type){
+  switch (type){
     case WaveType::WAVE_SINE:
       waveform = new SineWave(norm_freq);
       break;

@@ -15,6 +15,7 @@ class Filter {
 
 public:
 
+    virtual ~Filter() = default;
     virtual FrameBuffer& doFilterings(FrameBuffer& buffer) = 0;
 };
 

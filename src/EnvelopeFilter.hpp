@@ -35,7 +35,6 @@ class EnvelopeFilter : public Filter {
 public:
     EnvelopeFilter(const int _attack, const int _decay, const float _sustain, const int _release)
         : adsr({_attack, _decay, _sustain, _release}){};
-    ~EnvelopeFilter();
 
 
     FrameBuffer& doFilterings(FrameBuffer& buffer) override;

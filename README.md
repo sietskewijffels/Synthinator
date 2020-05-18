@@ -26,6 +26,7 @@ A command line synthesizer.
 # To Do:
 
 * More cleanup
+* Move note event handling outside of the audio thread
 * Configurable Keyboard device
 * Actual UI
 * Add stereo interleaving
@@ -41,6 +42,7 @@ A lot of things would most likely be a lot nicer with a dedicated datatype class
 
 * Allows objects to get frame and maybe sample_freq from their instead of providing in constructor.
 * Allows an `operator+`
+* Releases its memory on destruction
 
 ## Keyboard device
 > Take care that the correct keyboard device is used (even when name is correct) events might only be obtained when multiple keys are held simultaneously when wrong device is used.

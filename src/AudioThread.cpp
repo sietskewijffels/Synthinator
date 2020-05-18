@@ -72,6 +72,8 @@ int AudioThread::onPlayback(){
     // NOTE: this might get flooded with events and never exit.
     while (!event_queue->queue.empty()){
 
+        std::cerr << "doing event handling and shit" << std::endl;
+
             // check what event it was
             if (event_queue->queue.front().type == NOTE_OFF && event_queue->queue.front().freq != 0){
 
@@ -88,6 +90,7 @@ int AudioThread::onPlayback(){
 
             } else if (event_queue->queue.front().type == NOTE_ON && event_queue->queue.front().freq != 0) {
                 // NOTE_ON create new oscillator and add to playing notes
+                std::cerr << "Twas a NOTE_ON event.." << std::endl;
                 Note note(event_queue->queue.front().freq, sample_freq);
                 playing.push_back(note);
                 std::cerr << "NOTE ON " << event_queue->queue.front().freq << std::endl;
