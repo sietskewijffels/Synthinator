@@ -22,8 +22,6 @@ public:
   Oscillator(const float norm_freq, WaveType _type);
   ~Oscillator();
 
-  FrameBuffer buffer;
-
   Waveform * waveform;    // Waveform gen
   float norm_freq;        // Normalized frequency (cycles / sample)
 
