@@ -32,7 +32,7 @@ Oscillator::Oscillator(const float _norm_freq, WaveType _type):
 
 Oscillator::~Oscillator(){
 
-    delete waveform;
+    //delete waveform;
 }
 
 FrameBuffer& Oscillator::oscillate(){
