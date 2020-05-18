@@ -13,6 +13,7 @@
 #define _NOTE_HPP
 
 #include <vector>
+#include <memory>
 
 #include "oscillator.hpp"
 #include "Filter.hpp"
@@ -44,7 +45,7 @@ public:
 private:
     // Some datastrucure holding the filter chain
     std::vector<Filter *> filter_chain;
-    std::vector<Oscillator> oscillators;
+    std::vector<std::shared_ptr<Oscillator>> oscillators;
 
     void normalize();
     float normalize(const float freq);
