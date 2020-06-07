@@ -1,4 +1,8 @@
 
+# Pop when releasing note
+
+There is a pop when alternating between notes. E.g. when the first note is released while the second note is still playing. Only occurs when the first note is released.
+
 # Weird double free
 
 Caused by `FrameBuffer::operator*()`. On return, the copy of `*this` gets destroyed and thus frees the buffer. (I think...)
