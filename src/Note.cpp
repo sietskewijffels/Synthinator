@@ -26,9 +26,14 @@ Note::Note(const float _analog_freq, const unsigned int _sample_freq) :
     oscillators.emplace_back(osc1);
 
     // Add some harmonics for shits n giggles
-    //oscillators.emplace_back(new Oscillator(norm_freq / 2, WaveType::WAVE_SINE));
+	std::shared_ptr<Oscillator> osc2(new Oscillator(norm_freq / 2, WaveType::WAVE_SINE));
+	oscillators.emplace_back(osc2);
     //oscillators.emplace_back(new Oscillator(norm_freq / 4, WaveType::WAVE_SINE));
+	std::shared_ptr<Oscillator> osc3(new Oscillator(norm_freq / 4, WaveType::WAVE_SINE));
+	oscillators.emplace_back(osc3);
     //oscillators.emplace_back(new Oscillator(norm_freq / 8, WaveType::WAVE_SINE));
+	std::shared_ptr<Oscillator> osc4(new Oscillator(norm_freq / 8, WaveType::WAVE_SINE));
+	oscillators.emplace_back(osc4);
     //oscillators.emplace_back(new Oscillator(norm_freq * 2, WaveType::WAVE_SINE));
     //oscillators.emplace_back(norm_freq * 4, WaveType::WAVE_SINE);
     /*
