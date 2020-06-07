@@ -1,5 +1,5 @@
 #include "FrameBuffer.hpp"
-
+#include <cstring>
 
 FrameBuffer::FrameBuffer(){
 
@@ -8,6 +8,13 @@ FrameBuffer::FrameBuffer(){
     for (std::size_t i = 0; i < frame_size * num_channels; i++){
         buffer[i] = 0;
     }
+}
+
+FrameBuffer::FrameBuffer(const FrameBuffer& old){
+
+	buffer = new float[frame_size * num_channels];
+
+	std::memcpy(buffer, old.get(), frame_size * num_channels * sizeof(float));
 }
 
 FrameBuffer::~FrameBuffer(){
