@@ -3,6 +3,10 @@
 
 Caused by `FrameBuffer::operator*()`. On return, the copy of `*this` gets destroyed and thus frees the buffer. (I think...)
 
+## Fix:
+
+Copy constructor now explicitly `memcpy()`'s the buffer.
+
 # Weird segfault
 
 * Seems to be caused by `delete waveform;` in `Oscillator::~Oscillator`;
