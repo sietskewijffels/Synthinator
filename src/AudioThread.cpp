@@ -4,7 +4,7 @@
 AudioThread::AudioThread(EventQueue * _event_queue): event_queue(_event_queue){
 
 
-    if (snd_pcm_open(&pcm_handle, "default", SND_PCM_STREAM_PLAYBACK, 0) < 0){
+    if (snd_pcm_open(&pcm_handle, "plughw:1,0", SND_PCM_STREAM_PLAYBACK, 0) < 0){
 
         std::cerr << "Error opening soud device yo!" << std::endl;
         exit(-1);
@@ -105,15 +105,17 @@ int AudioThread::onPlayback(){
 
     if (!playing.empty()){
 
-    // oscillate all running oscillators
-        for (auto note = playing.begin(); note < playing.end(); note++){
+	
+		// Erase inactive notes from playing vector before synthesizing
+		for (auto note = playing.begin(); note < playing.end(); note++){
 
-            // Skip finished notes
             if (!(*note)->isActive()){
-                //std::cerr << "HOUDOE HEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" << std::endl;
                 note = playing.erase(note);
-                continue;
             }
+		}
+
+		// oscillate all running oscillators
+        for (auto note = playing.begin(); note < playing.end(); note++){
 
             // Print currently playing freqs
             std::cerr << (*note)->analog_freq << "\t";
