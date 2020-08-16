@@ -3,7 +3,7 @@ CXX := g++
 
 EXE := synth
 
-CFLAGS := -Wall -Wextra
+CFLAGS := -Wall -Wextra -g
 
 SRC_DIR := src
 OBJ_DIR := bin
@@ -17,7 +17,7 @@ LDFLAGS :=  -lasound -pthread
 all: $(EXE)
 
 $(EXE): $(OBJ)
-	$(CXX) $^ -o $@ $(LDFLAGS) 
+	$(CXX) $^ -o $@ $(LDFLAGS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
 	$(CXX) -c -o $@ $< $(CFLAGS)

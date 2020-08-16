@@ -23,24 +23,8 @@ A command line synthesizer.
     * on the next call to `Note::synthesize`, `note_active` gets set to false
 9. In `AudioThread::onPlayback`, `note_active` is checked and the note is removed from the `playing` vector.
 
-# To Do:
-
-* More cleanup
-* Configurable Keyboard device
-* Actual UI
-* Add stereo interleaving
-* Fix magic numbers
-* Implement different waveforms
-* Composite notes
 
 # Notes:
-
-## Buffer frame datatype is needed
-
-A lot of things would most likely be a lot nicer with a dedicated datatype class for frame buffers.
-
-* Allows objects to get frame and maybe sample_freq from their instead of providing in constructor.
-* Allows an `operator+`
 
 ## Keyboard device
 > Take care that the correct keyboard device is used (even when name is correct) events might only be obtained when multiple keys are held simultaneously when wrong device is used.

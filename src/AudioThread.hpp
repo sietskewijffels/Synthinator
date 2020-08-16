@@ -20,7 +20,6 @@ public:
 
 private:
     static const unsigned int sample_freq = 48000;
-    static const unsigned int buffer_size = 512;
     std::thread playback_loop;
 
     snd_pcm_t *pcm_handle;
@@ -28,8 +27,8 @@ private:
     int onPlayback();
     void makeSound();
 
-    float buffer[buffer_size]; // TODO: maybe change to std::array
-    std::vector<Note> playing;
+    FrameBuffer buffer;
+    std::vector<std::shared_ptr<Note>> playing;
 
 
 

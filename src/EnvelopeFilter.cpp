@@ -1,11 +1,11 @@
 #include "EnvelopeFilter.hpp"
 //#include <iostream>
 
-void EnvelopeFilter::doFilterings(){
+FrameBuffer& EnvelopeFilter::doFilterings(FrameBuffer& buffer){
 
     float y = 0;
 
-    for (unsigned int n = 0; n < frame_length; n++){
+    for (unsigned int n = 0; n < FrameBuffer::frame_size; n++){
 
         switch (envelope_phase){
         case(ATTACK):
@@ -47,4 +47,5 @@ void EnvelopeFilter::doFilterings(){
         phase++;
     }
 
+    return buffer;
 }

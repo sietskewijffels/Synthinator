@@ -15,66 +15,61 @@ float Note::normalize(const float freq){
 
 }
 
-Note::Note(const float _analog_freq, const unsigned int _sample_freq, const unsigned int _buffer_size) :
-    buffer_size(_buffer_size),
+Note::Note(const float _analog_freq, const unsigned int _sample_freq) :
     analog_freq(_analog_freq),
     sample_freq(_sample_freq)
 {
 
-    // Create buffer
-    buffer = (float *) malloc(sizeof(float) * _buffer_size);
-
     norm_freq = normalize(_analog_freq);
     // Add the base oscillator
-    oscillators.emplace_back(norm_freq, WaveType::WAVE_SINE);
+    std::shared_ptr<Oscillator> osc1(new Oscillator(norm_freq, WaveType::WAVE_SINE));
+    oscillators.emplace_back(osc1);
 
     // Add some harmonics for shits n giggles
-    oscillators.emplace_back(norm_freq / 2, WaveType::WAVE_SINE);
-    oscillators.emplace_back(norm_freq / 4, WaveType::WAVE_SINE);
-    oscillators.emplace_back(norm_freq / 8, WaveType::WAVE_SINE);
-    oscillators.emplace_back(norm_freq * 2, WaveType::WAVE_SINE);
-    oscillators.emplace_back(norm_freq * 4, WaveType::WAVE_SINE);
-
+	std::shared_ptr<Oscillator> osc2(new Oscillator(norm_freq / 2, WaveType::WAVE_SINE));
+	oscillators.emplace_back(osc2);
+    //oscillators.emplace_back(new Oscillator(norm_freq / 4, WaveType::WAVE_SINE));
+	std::shared_ptr<Oscillator> osc3(new Oscillator(norm_freq / 4, WaveType::WAVE_SINE));
+	oscillators.emplace_back(osc3);
+    //oscillators.emplace_back(new Oscillator(norm_freq / 8, WaveType::WAVE_SINE));
+	std::shared_ptr<Oscillator> osc4(new Oscillator(norm_freq / 8, WaveType::WAVE_SINE));
+	oscillators.emplace_back(osc4);
+    //oscillators.emplace_back(new Oscillator(norm_freq * 2, WaveType::WAVE_SINE));
+    //oscillators.emplace_back(norm_freq * 4, WaveType::WAVE_SINE);
     /*
         Initialize the base envelope and place at first position in chain
     */
 
-    base_envelope = new EnvelopeFilter(buffer, 512, 5000, 500, 0.95, 6000);
+    base_envelope = new EnvelopeFilter(5000, 500, 0.95, 6000);
 
 }
 
 
-void Note::synthesize(){
+FrameBuffer& Note::synthesize(){
 
-    // Reset buffer
-    for (unsigned int n = 0; n < buffer_size; n++){
-        buffer[n] = 0;
-    }
+
 
     if (base_envelope->envelope_phase != FINISHED){
 
         // Oscillate and sum all harmonics
-        for (auto osc: oscillators){
+        for (auto osc = oscillators.begin(); osc != oscillators.end(); ++osc){
 
-            osc.oscillate();
+            buffer += (*osc)->oscillate() *  (1 /(float) oscillators.size());
 
-            for (unsigned int n = 0; n < buffer_size; n++){
-
-                buffer[n] += osc.buffer[n] / oscillators.size();
-
-            }
         }
 
         // Run filters on final buffer
         for (auto filter: filter_chain){
-            filter->doFilterings();
+            filter->doFilterings(buffer);
         }
 
         // Finally run base envelope
-        base_envelope->doFilterings();
+        base_envelope->doFilterings(buffer);
     } else {
         note_active = false;
     }
+
+    return buffer;
 }
 
 void Note::signalOff(){
@@ -88,7 +83,7 @@ void Note::signalOff(){
 
 void Note::addHarmonic(const float freq){
 
-    oscillators.emplace_back(normalize(freq), WaveType::WAVE_SINE);
+    //oscillators.emplace_back(normalize(freq), WaveType::WAVE_SINE);
 
 }
 

@@ -13,26 +13,26 @@
 #define _NOTE_HPP
 
 #include <vector>
+#include <memory>
 
 #include "oscillator.hpp"
 #include "Filter.hpp"
 #include "EnvelopeFilter.hpp"
+#include "FrameBuffer.hpp"
 
 class Note {
 
 public:
-    Note(const float _analog_freq, const unsigned int _sample_freq, const unsigned int buffer_size);
+    Note(const float _analog_freq, const unsigned int _sample_freq);
 
-    void synthesize();
+    FrameBuffer& synthesize();
     void signalOff();
     void addHarmonic(const float _analog_freq);
     void addFilter();
     float getAnalogFreq(){return analog_freq;}
     bool isActive(){return note_active;}
 
-    float * buffer;
-    unsigned int buffer_size;
-
+    FrameBuffer buffer;
     float norm_freq;
     float analog_freq;
     unsigned int sample_freq;
@@ -45,7 +45,7 @@ public:
 private:
     // Some datastrucure holding the filter chain
     std::vector<Filter *> filter_chain;
-    std::vector<Oscillator> oscillators;
+    std::vector<std::shared_ptr<Oscillator>> oscillators;
 
     void normalize();
     float normalize(const float freq);

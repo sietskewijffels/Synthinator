@@ -46,13 +46,13 @@ void AudioThread::makeSound(){
     snd_pcm_poll_descriptors(pcm_handle, pfds, nfds);
 
 
-    std::cerr << "Buffer size: " << buffer_size << std::endl;
+    std::cerr << "Buffer size: " << FrameBuffer::frame_size << std::endl;
 
     while(1){
 
         if (poll(pfds, nfds, 1000) > 0){
             if (pfds->revents > 0){
-                if (onPlayback() < (int)buffer_size){
+                if (onPlayback() < (int) FrameBuffer::frame_size){
                     // Buffer underrun, restart
                     fprintf(stderr, "Underrun!\n");
                     snd_pcm_prepare(pcm_handle);
@@ -78,17 +78,17 @@ int AudioThread::onPlayback(){
                 // NOTE_OFF so remove from vector of playing notes
                 for (auto it: playing){
 
-                    if (it.analog_freq == event_queue->queue.front().freq){
+                    if (it->analog_freq == event_queue->queue.front().freq){
 
-                        std::cerr << "NOTE OFF " << it.analog_freq << std::endl;
-                        it.signalOff();
-                        
+                        std::cerr << "NOTE OFF " << it->analog_freq << std::endl;
+                        it->signalOff();
+
                     }
                 }
 
             } else if (event_queue->queue.front().type == NOTE_ON && event_queue->queue.front().freq != 0) {
                 // NOTE_ON create new oscillator and add to playing notes
-                Note note(event_queue->queue.front().freq, sample_freq, buffer_size);
+                std::shared_ptr<Note> note(new Note(event_queue->queue.front().freq, sample_freq));
                 playing.push_back(note);
                 std::cerr << "NOTE ON " << event_queue->queue.front().freq << std::endl;
             }
@@ -101,40 +101,33 @@ int AudioThread::onPlayback(){
     }
 
     // Reset buffer
-    for (unsigned int n = 0; n < buffer_size; n++){
-        buffer[n] = 0;
-    }
+    buffer *= 0;
 
     if (!playing.empty()){
 
-        // Remove the finished notes before synthesizing to avoid pops
-        for (auto note = playing.begin(); note < playing.end(); note++){
+	
+		// Erase inactive notes from playing vector before synthesizing
+		for (auto note = playing.begin(); note < playing.end(); note++){
 
-            if (!note->isActive()){
-                //std::cerr << "HOUDOE HEeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" << std::endl;
+            if (!(*note)->isActive()){
                 note = playing.erase(note);
             }
-        }
+		}
 
-    // oscillate all running oscillators
+		// oscillate all running oscillators
         for (auto note = playing.begin(); note < playing.end(); note++){
 
-            note->synthesize();
-
             // Print currently playing freqs
-            std::cerr << note->analog_freq << note->isActive() << "\t";
+            std::cerr << (*note)->analog_freq << "\t";
 
-            // Add obtained waveform to total buffer
-            for (unsigned int n = 0; n < buffer_size; n++ ){
-                buffer[n] += note->buffer[n] * 0.15;
-            }
+            buffer += ((*note)->synthesize() * 0.15);
         }
     std::cerr << std::endl;
     }
 
 
 
-    return snd_pcm_writei(pcm_handle, buffer, buffer_size);
+    return snd_pcm_writei(pcm_handle, buffer.get(), FrameBuffer::frame_size);
 
 
 }
