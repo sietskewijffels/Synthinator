@@ -1,6 +1,6 @@
 # Synthinator
 
-A command line synthesizer.
+A command line synthesizer. Met coowle shizz enzo jwz.
 
 # Note Lifecycle
 
